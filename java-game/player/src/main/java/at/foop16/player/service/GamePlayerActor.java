@@ -1,3 +1,5 @@
+package at.foop16.player.service;
+
 import akka.actor.ActorRef;
 import akka.actor.Cancellable;
 import akka.actor.UntypedActor;
@@ -10,7 +12,7 @@ import scala.concurrent.duration.Duration;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-public class PlayerActor extends UntypedActor {
+public class GamePlayerActor extends UntypedActor {
 
     private final LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     private final ActorRef mediator = DistributedPubSub.get(getContext().system()).mediator();
@@ -18,7 +20,7 @@ public class PlayerActor extends UntypedActor {
     private Cancellable waitingForPlayers;
     private final UUID uuid;
 
-    public PlayerActor() {
+    public GamePlayerActor() {
         uuid = UUID.randomUUID();
         mediator.tell(new DistributedPubSubMediator.Subscribe("content", getSelf()), getSelf());
     }

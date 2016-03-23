@@ -1,3 +1,5 @@
+package at.foop16.server;
+
 import akka.actor.UntypedActor;
 import akka.cluster.Cluster;
 import akka.cluster.ClusterEvent;
@@ -6,7 +8,7 @@ import akka.event.LoggingAdapter;
 
 import static akka.cluster.ClusterEvent.initialStateAsEvents;
 
-public class ObserverActor extends UntypedActor {
+public class GameServerActor extends UntypedActor {
 
     LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     Cluster cluster = Cluster.get(getContext().system());

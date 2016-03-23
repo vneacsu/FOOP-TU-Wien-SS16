@@ -2,5 +2,5 @@ rootProject.name = 'foop-ss16'
 
 include 'java-game'
 include 'java-game:common'
-include 'java-game:client'
+include 'java-game:player'
 include 'java-game:server'
