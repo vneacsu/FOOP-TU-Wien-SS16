@@ -1,23 +1,51 @@
 package at.foop16.player;
 
-import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
-import akka.actor.Props;
-import at.foop16.player.service.GamePlayerActor;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.PrivateModule;
 import com.typesafe.config.ConfigFactory;
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
-public class Main {
+public class Main extends Application {
 
-    public static void main(String[] args) throws InterruptedException {
-        ActorSystem system = ActorSystem.create("game", ConfigFactory.load("akka.conf"));
-        ActorRef player = system.actorOf(Props.create(GamePlayerActor.class), "player");
-        player.tell("JoinGame", ActorRef.noSender());
+    private static final Injector injector = Guice.createInjector(new PlayerModule());
 
-        Thread.sleep(10 * 1000);
-        player.tell("StartGame", ActorRef.noSender());
-
-//        ActorRef mediator = DistributedPubSub.get(system).mediator();
-//        mediator.tell(new DistributedPubSubMediator.Publish("content", "Hi"), ActorRef.noSender());
+    public static void main(String[] args) {
+        launch(args);
     }
 
+    @Override
+    public void start(Stage stage) throws Exception {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/main.fxml"));
+        fxmlLoader.setControllerFactory(injector::getInstance);
+        Parent root = fxmlLoader.load();
+
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+
+        stage.setTitle("Mice race - Premium Edition");
+        stage.show();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        injector.getInstance(ActorSystem.class).shutdown();
+    }
+
+    private static final class PlayerModule extends PrivateModule {
+
+        @Override
+        protected void configure() {
+            ActorSystem actorSystem = ActorSystem.create("game", ConfigFactory.load("akka.conf"));
+
+            expose(ActorSystem.class);
+
+            bind(ActorSystem.class).toInstance(actorSystem);
+        }
+    }
 }

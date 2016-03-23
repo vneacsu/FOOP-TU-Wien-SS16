@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
+            prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="at.foop16.player.ui.MainController">
+    <center>
+        <GridPane alignment="CENTER">
+            <Label fx:id="loadingLabel" text="Loading..."/>
+
+            <GridPane fx:id="newGamePanel" visible="false">
+                <Button text="1 player" onAction="#newGameSelected"/>
+                <Button text="2 players" onAction="#newGameSelected" GridPane.columnIndex="1"/>
+                <Button text="3 players" onAction="#newGameSelected" GridPane.columnIndex="2"/>
+                <Button text="4 players" onAction="#newGameSelected" GridPane.columnIndex="3"/>
+            </GridPane>
+        </GridPane>
+    </center>
+</BorderPane>

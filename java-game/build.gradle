@@ -2,10 +2,19 @@ subprojects {
     apply plugin: 'java'
 
     repositories { mavenCentral() }
+}
 
+configure(subprojects - project(":java-game:common")) {
     dependencies {
-        compile 'com.typesafe.akka:akka-actor_2.11:2.4.2'
-        compile 'com.typesafe.akka:akka-cluster_2.11:2.4.2'
-        compile 'com.typesafe.akka:akka-cluster-tools_2.11:2.4.2'
+        def akkaVersion = "2.4.2"
+
+        compile "com.typesafe.akka:akka-actor_2.11:$akkaVersion"
+        compile "com.typesafe.akka:akka-cluster_2.11:$akkaVersion"
+        compile "com.typesafe.akka:akka-cluster-tools_2.11:$akkaVersion"
+
+        compile "javax.inject:javax.inject:1"
+        compile "com.google.inject:guice:4.0"
+
+        compile project(":java-game:common")
     }
 }
