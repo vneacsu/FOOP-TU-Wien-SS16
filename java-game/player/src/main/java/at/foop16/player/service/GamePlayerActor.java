@@ -36,12 +36,17 @@ public class GamePlayerActor extends UntypedActor implements GameEventVisitor {
     private void handleTerminated(Terminated msg) {
         log.info("Received terminated event for {}", msg.actor());
 
-        if (!gameServer.equals(msg.actor())) return;
+        if (gameServer.equals(msg.actor())) {
+            log.error("Game server is DOWN");
 
-        log.error("Game server is DOWN");
+            gameServer = null;
+            gameStateListener.onGameServerDown();
+        } else {
+            log.warning("Player {} is DOWN and left the game", msg.actor());
 
-        gameServer = null;
-        gameStateListener.onGameServerDown();
+            gameStateListener.onPlayerLeftGame(msg.actor());
+        }
+
     }
 
     @Override
@@ -62,6 +67,10 @@ public class GamePlayerActor extends UntypedActor implements GameEventVisitor {
     @Override
     public void visitGameReadyEvent(GameReadyEvent event) {
         log.info("Game ready to start");
+
+        event.getPlayers().stream()
+                .filter(it -> !it.equals(getSelf()))
+                .forEach(it -> getContext().watch(it));
 
         gameStateListener.onGameReady(event.getPlayers());
     }

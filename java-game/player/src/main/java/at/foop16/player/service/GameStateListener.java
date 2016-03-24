@@ -11,4 +11,6 @@ public interface GameStateListener {
     void onPlayerConnected();
 
     void onGameReady(List<ActorRef> players);
+
+    void onPlayerLeftGame(ActorRef player);
 }

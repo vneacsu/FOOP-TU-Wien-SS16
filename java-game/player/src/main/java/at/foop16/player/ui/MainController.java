@@ -99,6 +99,11 @@ public class MainController implements Initializable, GameStateListener {
         });
     }
 
+    @Override
+    public void onPlayerLeftGame(ActorRef player) {
+        Platform.runLater(() -> activePlayers.remove(player));
+    }
+
     @FXML
     private void newGameSelected(ActionEvent event) {
         String buttonText = ((Button) event.getSource()).getText();
