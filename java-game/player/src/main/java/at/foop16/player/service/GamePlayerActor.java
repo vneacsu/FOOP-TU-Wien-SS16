@@ -5,6 +5,7 @@ import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import at.foop16.events.AwaitNewGameEvent;
+import at.foop16.events.GameReadyEvent;
 import at.foop16.events.PlayerConnectedEvent;
 import com.google.common.base.Preconditions;
 
@@ -32,6 +33,10 @@ public class GamePlayerActor extends UntypedActor {
             gameStateListener.onPlayerConnected();
         } else if (msg instanceof AwaitNewGameEvent) {
             gameServer.tell(msg, getSelf());
+        } else if (msg instanceof GameReadyEvent) {
+            log.info("Game ready to start");
+
+            gameStateListener.onGameReady(((GameReadyEvent) msg).getPlayers());
         } else {
             unhandled(msg);
         }

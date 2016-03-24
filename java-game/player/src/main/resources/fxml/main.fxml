@@ -15,6 +15,12 @@
                 <Button text="3 players" onAction="#newGameSelected" GridPane.columnIndex="2"/>
                 <Button text="4 players" onAction="#newGameSelected" GridPane.columnIndex="3"/>
             </GridPane>
+
+            <Label fx:id="waitingPlayersLabel" text="Waiting players..." visible="false"/>
+
+            <GridPane fx:id="playGamePanel" visible="false">
+                <Button text="Press when had enough of playing" onAction="#endGame"/>
+            </GridPane>
         </GridPane>
     </center>
 </BorderPane>

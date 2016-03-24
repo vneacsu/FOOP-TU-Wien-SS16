@@ -16,6 +16,7 @@ import javafx.scene.layout.GridPane;
 
 import javax.inject.Inject;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,12 +26,18 @@ public class MainController implements Initializable, GameStateListener {
     @Inject
     private ActorSystem actorSystem;
 
-    private ActorRef player;
+    private volatile ActorRef player;
+
+    private volatile List<ActorRef> players;
 
     @FXML
     private Label loadingLabel;
     @FXML
     private GridPane newGamePanel;
+    @FXML
+    private Label waitingPlayersLabel;
+    @FXML
+    private GridPane playGamePanel;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -45,6 +52,16 @@ public class MainController implements Initializable, GameStateListener {
         });
     }
 
+    @Override
+    public void onGameReady(List<ActorRef> players) {
+        this.players = players;
+
+        Platform.runLater(() -> {
+            waitingPlayersLabel.setVisible(false);
+            playGamePanel.setVisible(true);
+        });
+    }
+
     @FXML
     private void newGameSelected(ActionEvent event) {
         String buttonText = ((Button) event.getSource()).getText();
@@ -56,5 +73,14 @@ public class MainController implements Initializable, GameStateListener {
         int nPlayers = Integer.parseInt(matcher.group(1));
 
         player.tell(new AwaitNewGameEvent(nPlayers), null);
+
+        newGamePanel.setVisible(false);
+        waitingPlayersLabel.setVisible(true);
+    }
+
+    @FXML
+    private void endGame(ActionEvent event) {
+        playGamePanel.setVisible(false);
+        newGamePanel.setVisible(true);
     }
 }
