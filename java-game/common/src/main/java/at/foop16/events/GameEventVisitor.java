@@ -20,4 +20,9 @@ public interface GameEventVisitor {
                         "it or make sure it is never called!");
     }
 
+    default void visitLeaveActiveGameEvent(LeaveActiveGameEvent event) {
+        throw new UnsupportedOperationException(
+                "Operation not supported! You must either implement " +
+                        "it or make sure it is never called!");
+    }
 }

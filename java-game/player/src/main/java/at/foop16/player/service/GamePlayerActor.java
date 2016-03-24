@@ -74,4 +74,11 @@ public class GamePlayerActor extends UntypedActor implements GameEventVisitor {
 
         gameStateListener.onGameReady(event.getPlayers());
     }
+
+    @Override
+    public void visitLeaveActiveGameEvent(LeaveActiveGameEvent event) {
+        log.info("Player {} left the game", getSender());
+
+        gameStateListener.onPlayerLeftGame(getSender());
+    }
 }

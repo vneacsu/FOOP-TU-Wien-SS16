@@ -4,6 +4,7 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
 import at.foop16.events.AwaitNewGameEvent;
+import at.foop16.events.LeaveActiveGameEvent;
 import at.foop16.player.service.GamePlayerActor;
 import at.foop16.player.service.GameStateListener;
 import javafx.application.Platform;
@@ -123,5 +124,7 @@ public class MainController implements Initializable, GameStateListener {
     private void endGame(ActionEvent event) {
         playGamePanel.setVisible(false);
         newGamePanel.setVisible(true);
+
+        activePlayers.forEach(it -> it.tell(new LeaveActiveGameEvent(), player));
     }
 }
