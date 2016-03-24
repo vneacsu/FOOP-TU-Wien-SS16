@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface GameStateListener {
 
+    void onGameServerDown();
+
     void onPlayerConnected();
 
     void onGameReady(List<ActorRef> players);

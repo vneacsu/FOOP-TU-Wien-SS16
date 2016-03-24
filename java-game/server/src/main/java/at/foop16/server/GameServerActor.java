@@ -45,24 +45,6 @@ public class GameServerActor extends UntypedActor implements GameEventVisitor {
         }
 
         // TODO: handle member failures/removal
-//        if (message instanceof ClusterEvent.MemberUp) {
-//            ClusterEvent.MemberUp mUp = (ClusterEvent.MemberUp) message;
-//            log.info("Member is Up: {}", mUp.member());
-//
-//        } else if (message instanceof ClusterEvent.UnreachableMember) {
-//            ClusterEvent.UnreachableMember mUnreachable = (ClusterEvent.UnreachableMember) message;
-//            log.info("Member detected as unreachable: {}", mUnreachable.member());
-//
-//        } else if (message instanceof ClusterEvent.MemberRemoved) {
-//            ClusterEvent.MemberRemoved mRemoved = (ClusterEvent.MemberRemoved) message;
-//            log.info("Member is Removed: {}", mRemoved.member());
-//
-//        } else if (message instanceof ClusterEvent.MemberEvent) {
-//            // ignore
-//            unhandled(message);
-//        } else {
-//            unhandled(message);
-//        }
     }
 
     private void handleMemberUp(Member member) {

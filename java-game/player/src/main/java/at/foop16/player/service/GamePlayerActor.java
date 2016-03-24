@@ -1,6 +1,7 @@
 package at.foop16.player.service;
 
 import akka.actor.ActorRef;
+import akka.actor.Terminated;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
@@ -23,20 +24,32 @@ public class GamePlayerActor extends UntypedActor implements GameEventVisitor {
 
     @Override
     public void onReceive(Object msg) {
-        if (msg instanceof GameEvent) {
+        if (msg instanceof Terminated) {
+            handleTerminated((Terminated) msg);
+        } else if (msg instanceof GameEvent) {
             ((GameEvent) msg).accept(this);
         } else {
             unhandled(msg);
         }
+    }
 
-        // TODO: handle game server failures/removal with watch
+    private void handleTerminated(Terminated msg) {
+        log.info("Received terminated event for {}", msg.actor());
+
+        if (!gameServer.equals(msg.actor())) return;
+
+        log.error("Game server is DOWN");
+
+        gameServer = null;
+        gameStateListener.onGameServerDown();
     }
 
     @Override
     public void visitPlayerConnectedEvent(PlayerConnectedEvent event) {
         log.info("Player connected to game server");
 
-        this.gameServer = getSender();
+        gameServer = getSender();
+        getContext().watch(gameServer);
 
         gameStateListener.onPlayerConnected();
     }

@@ -7,7 +7,7 @@
             fx:controller="at.foop16.player.ui.MainController">
     <center>
         <GridPane alignment="CENTER">
-            <Label fx:id="loadingLabel" text="Loading..."/>
+            <Label fx:id="loadingLabel" text="Connecting to game server..."/>
 
             <GridPane fx:id="newGamePanel" visible="false">
                 <Button text="1 player" onAction="#newGameSelected"/>
@@ -15,8 +15,6 @@
                 <Button text="3 players" onAction="#newGameSelected" GridPane.columnIndex="2"/>
                 <Button text="4 players" onAction="#newGameSelected" GridPane.columnIndex="3"/>
             </GridPane>
-
-            <Label fx:id="waitingPlayersLabel" text="Waiting players..." visible="false"/>
 
             <GridPane fx:id="playGamePanel" visible="false">
                 <Button text="Press when had enough of playing" onAction="#endGame"/>

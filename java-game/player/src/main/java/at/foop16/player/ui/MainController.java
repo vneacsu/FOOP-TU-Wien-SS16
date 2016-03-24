@@ -16,6 +16,7 @@ import javafx.scene.layout.GridPane;
 
 import javax.inject.Inject;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
@@ -35,13 +36,25 @@ public class MainController implements Initializable, GameStateListener {
     @FXML
     private GridPane newGamePanel;
     @FXML
-    private Label waitingPlayersLabel;
-    @FXML
     private GridPane playGamePanel;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         player = actorSystem.actorOf(Props.create(GamePlayerActor.class, this), "player");
+    }
+
+    @Override
+    public void onGameServerDown() {
+        Platform.runLater(() -> setLoadingState(
+                "Game server is down! Please try again later (restart required)..."));
+    }
+
+    private void setLoadingState(String message) {
+        Arrays.asList(newGamePanel, playGamePanel)
+                .forEach(it -> it.setVisible(false));
+
+        loadingLabel.setText(message);
+        loadingLabel.setVisible(true);
     }
 
     @Override
@@ -57,7 +70,7 @@ public class MainController implements Initializable, GameStateListener {
         this.players = players;
 
         Platform.runLater(() -> {
-            waitingPlayersLabel.setVisible(false);
+            loadingLabel.setVisible(false);
             playGamePanel.setVisible(true);
         });
     }
@@ -74,8 +87,7 @@ public class MainController implements Initializable, GameStateListener {
 
         player.tell(new AwaitNewGameEvent(nPlayers), null);
 
-        newGamePanel.setVisible(false);
-        waitingPlayersLabel.setVisible(true);
+        setLoadingState("Waiting players...");
     }
 
     @FXML
