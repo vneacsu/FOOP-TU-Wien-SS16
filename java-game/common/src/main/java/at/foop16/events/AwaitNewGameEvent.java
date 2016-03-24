@@ -10,4 +10,9 @@ public class AwaitNewGameEvent implements GameEvent {
     public int getNumPlayers() {
         return numPlayers;
     }
+
+    @Override
+    public void accept(GameEventVisitor visitor) {
+        visitor.visitAwaitNewGameEvent(this);
+    }
 }

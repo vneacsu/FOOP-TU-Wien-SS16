@@ -16,4 +16,9 @@ public class GameReadyEvent implements GameEvent {
     public List<ActorRef> getPlayers() {
         return Collections.unmodifiableList(players);
     }
+
+    @Override
+    public void accept(GameEventVisitor visitor) {
+        visitor.visitGameReadyEvent(this);
+    }
 }

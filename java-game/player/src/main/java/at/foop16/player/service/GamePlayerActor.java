@@ -4,12 +4,10 @@ import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import at.foop16.events.AwaitNewGameEvent;
-import at.foop16.events.GameReadyEvent;
-import at.foop16.events.PlayerConnectedEvent;
+import at.foop16.events.*;
 import com.google.common.base.Preconditions;
 
-public class GamePlayerActor extends UntypedActor {
+public class GamePlayerActor extends UntypedActor implements GameEventVisitor {
 
     private final LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
@@ -25,22 +23,33 @@ public class GamePlayerActor extends UntypedActor {
 
     @Override
     public void onReceive(Object msg) {
-        if (msg instanceof PlayerConnectedEvent) {
-            log.info("Player connected to game server");
-
-            this.gameServer = getSender();
-
-            gameStateListener.onPlayerConnected();
-        } else if (msg instanceof AwaitNewGameEvent) {
-            gameServer.tell(msg, getSelf());
-        } else if (msg instanceof GameReadyEvent) {
-            log.info("Game ready to start");
-
-            gameStateListener.onGameReady(((GameReadyEvent) msg).getPlayers());
+        if (msg instanceof GameEvent) {
+            ((GameEvent) msg).accept(this);
         } else {
             unhandled(msg);
         }
 
         // TODO: handle game server failures/removal with watch
+    }
+
+    @Override
+    public void visitPlayerConnectedEvent(PlayerConnectedEvent event) {
+        log.info("Player connected to game server");
+
+        this.gameServer = getSender();
+
+        gameStateListener.onPlayerConnected();
+    }
+
+    @Override
+    public void visitAwaitNewGameEvent(AwaitNewGameEvent event) {
+        gameServer.tell(event, getSelf());
+    }
+
+    @Override
+    public void visitGameReadyEvent(GameReadyEvent event) {
+        log.info("Game ready to start");
+
+        gameStateListener.onGameReady(event.getPlayers());
     }
 }

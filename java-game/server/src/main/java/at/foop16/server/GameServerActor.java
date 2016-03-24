@@ -8,9 +8,7 @@ import akka.cluster.ClusterEvent.MemberUp;
 import akka.cluster.Member;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import at.foop16.events.AwaitNewGameEvent;
-import at.foop16.events.GameReadyEvent;
-import at.foop16.events.PlayerConnectedEvent;
+import at.foop16.events.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,7 +17,7 @@ import java.util.Map;
 
 import static akka.cluster.ClusterEvent.initialStateAsEvents;
 
-public class GameServerActor extends UntypedActor {
+public class GameServerActor extends UntypedActor implements GameEventVisitor {
 
     LoggingAdapter log = Logging.getLogger(getContext().system(), this);
     Cluster cluster = Cluster.get(getContext().system());
@@ -40,8 +38,8 @@ public class GameServerActor extends UntypedActor {
     public void onReceive(Object msg) {
         if (msg instanceof MemberUp) {
             handleMemberUp(((MemberUp) msg).member());
-        } else if (msg instanceof AwaitNewGameEvent) {
-            handleAwaitNewGame((AwaitNewGameEvent) msg);
+        } else if (msg instanceof GameEvent) {
+            ((GameEvent) msg).accept(this);
         } else {
             unhandled(msg);
         }
@@ -74,23 +72,24 @@ public class GameServerActor extends UntypedActor {
                 .tell(new PlayerConnectedEvent(), getSelf());
     }
 
-    private void handleAwaitNewGame(AwaitNewGameEvent msg) {
-        log.info("Player requested new game for {} players", msg.getNumPlayers());
+    @Override
+    public void visitAwaitNewGameEvent(AwaitNewGameEvent event) {
+        log.info("Player requested new game for {} players", event.getNumPlayers());
 
-        updateWaitingPlayersMap(msg);
+        updateWaitingPlayersMap(event);
 
-        if (enoughPlayersForGameOf(msg.getNumPlayers())) {
-            notifyGameReadyFor(msg.getNumPlayers());
+        if (enoughPlayersForGameOf(event.getNumPlayers())) {
+            notifyGameReadyFor(event.getNumPlayers());
         }
     }
 
-    private void updateWaitingPlayersMap(AwaitNewGameEvent msg) {
+    private void updateWaitingPlayersMap(AwaitNewGameEvent event) {
         List<ActorRef> players = waitingPlayersMap.getOrDefault(
-                msg.getNumPlayers(), new ArrayList<>());
+                event.getNumPlayers(), new ArrayList<>());
 
         players.add(getSender());
 
-        waitingPlayersMap.put(msg.getNumPlayers(), players);
+        waitingPlayersMap.put(event.getNumPlayers(), players);
     }
 
     private boolean enoughPlayersForGameOf(int numPlayers) {
