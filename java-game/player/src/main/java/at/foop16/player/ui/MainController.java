@@ -7,11 +7,16 @@ import at.foop16.events.AwaitNewGameEvent;
 import at.foop16.player.service.GamePlayerActor;
 import at.foop16.player.service.GameStateListener;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 
 import javax.inject.Inject;
@@ -29,18 +34,36 @@ public class MainController implements Initializable, GameStateListener {
 
     private volatile ActorRef player;
 
-    private volatile List<ActorRef> players;
+    @FXML
+    private ListView<ActorRef> activePlayersList;
+
+    private final ObservableList<ActorRef> activePlayers = FXCollections.observableArrayList();
 
     @FXML
     private Label loadingLabel;
     @FXML
-    private GridPane newGamePanel;
+    private FlowPane newGamePanel;
     @FXML
     private GridPane playGamePanel;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         player = actorSystem.actorOf(Props.create(GamePlayerActor.class, this), "player");
+
+        activePlayersList.setItems(activePlayers);
+        customizeActivePlayersDisplayedName();
+    }
+
+    private void customizeActivePlayersDisplayedName() {
+        activePlayersList.setCellFactory(param -> new ListCell<ActorRef>() {
+            @Override
+            protected void updateItem(ActorRef item, boolean empty) {
+                super.updateItem(item, empty);
+
+                String text = item != null ? "Player #" + Math.abs(item.path().uid()) : null;
+                setText(text);
+            }
+        });
     }
 
     @Override
@@ -67,9 +90,10 @@ public class MainController implements Initializable, GameStateListener {
 
     @Override
     public void onGameReady(List<ActorRef> players) {
-        this.players = players;
-
         Platform.runLater(() -> {
+            activePlayers.clear();
+            activePlayers.addAll(players);
+
             loadingLabel.setVisible(false);
             playGamePanel.setVisible(true);
         });

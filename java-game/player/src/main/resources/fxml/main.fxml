@@ -7,17 +7,22 @@
             fx:controller="at.foop16.player.ui.MainController">
     <center>
         <GridPane alignment="CENTER">
-            <Label fx:id="loadingLabel" text="Connecting to game server..."/>
+            <FlowPane alignment="CENTER" GridPane.hgrow="ALWAYS">
+                <Label fx:id="loadingLabel" text="Connecting to game server..."/>
+            </FlowPane>
 
-            <GridPane fx:id="newGamePanel" visible="false">
+            <FlowPane fx:id="newGamePanel" visible="false" alignment="CENTER" hgap="16" GridPane.hgrow="ALWAYS">
                 <Button text="1 player" onAction="#newGameSelected"/>
-                <Button text="2 players" onAction="#newGameSelected" GridPane.columnIndex="1"/>
-                <Button text="3 players" onAction="#newGameSelected" GridPane.columnIndex="2"/>
-                <Button text="4 players" onAction="#newGameSelected" GridPane.columnIndex="3"/>
-            </GridPane>
+                <Button text="2 players" onAction="#newGameSelected"/>
+                <Button text="3 players" onAction="#newGameSelected"/>
+                <Button text="4 players" onAction="#newGameSelected"/>
+            </FlowPane>
 
-            <GridPane fx:id="playGamePanel" visible="false">
-                <Button text="Press when had enough of playing" onAction="#endGame"/>
+            <GridPane fx:id="playGamePanel" visible="false" hgap="16" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+                <Button text="Press when had enough of playing" onAction="#endGame" GridPane.hgrow="ALWAYS"
+                        GridPane.halignment="CENTER"/>
+
+                <ListView GridPane.columnIndex="1" GridPane.halignment="RIGHT" fx:id="activePlayersList"/>
             </GridPane>
         </GridPane>
     </center>
