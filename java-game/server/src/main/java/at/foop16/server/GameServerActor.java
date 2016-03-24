@@ -1,6 +1,7 @@
 package at.foop16.server;
 
 import akka.actor.ActorRef;
+import akka.actor.Terminated;
 import akka.actor.UntypedActor;
 import akka.cluster.Cluster;
 import akka.cluster.ClusterEvent;
@@ -36,7 +37,9 @@ public class GameServerActor extends UntypedActor implements GameEventVisitor {
 
     @Override
     public void onReceive(Object msg) {
-        if (msg instanceof MemberUp) {
+        if (msg instanceof Terminated) {
+            handleTerminated((Terminated) msg);
+        } else if (msg instanceof MemberUp) {
             handleMemberUp(((MemberUp) msg).member());
         } else if (msg instanceof GameEvent) {
             ((GameEvent) msg).accept(this);
@@ -45,6 +48,16 @@ public class GameServerActor extends UntypedActor implements GameEventVisitor {
         }
 
         // TODO: handle member failures/removal
+    }
+
+    private void handleTerminated(Terminated msg) {
+        log.warning("Player {} is DOWN!", msg.actor());
+
+        for (List<ActorRef> players : waitingPlayersMap.values()) {
+            if (players.contains(msg.actor())) {
+                players.remove(msg.actor());
+            }
+        }
     }
 
     private void handleMemberUp(Member member) {
@@ -57,6 +70,8 @@ public class GameServerActor extends UntypedActor implements GameEventVisitor {
     @Override
     public void visitAwaitNewGameEvent(AwaitNewGameEvent event) {
         log.info("Player requested new game for {} players", event.getNumPlayers());
+
+        getContext().watch(getSender());
 
         updateWaitingPlayersMap(event);
 
@@ -85,6 +100,10 @@ public class GameServerActor extends UntypedActor implements GameEventVisitor {
 
         GameReadyEvent event = new GameReadyEvent(players);
 
-        players.forEach(it -> it.tell(event, getSelf()));
+        players.forEach(it -> {
+            getContext().unwatch(it);
+
+            it.tell(event, getSelf());
+        });
     }
 }
