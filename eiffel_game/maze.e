@@ -11,25 +11,45 @@ inherit
 	EV_PIXMAP
 
 create
-	make
+	make_with_fields
 
 feature {NONE} -- Initialization
 
-	make
-			-- Initialization for `Current'.
+	make_with_fields(the_fields: ARRAY2[FIELD])
+			-- Initialization of the maze.
 		do
+			fields := the_fields
+
 			default_create
-			
-			set_size (200, 200)
+
+			set_size (fields.width * 16, fields.height * 16)
 		end
 
 feature -- Game graphics
 
+	fields: ARRAY2[FIELD]
+
 	repaint
 			-- Repaints the maze game
+		local
+			x: INTEGER_32
+			y: INTEGER_32
 		do
 			clear
-			draw_text_top_left (10, 10, "Game running")
+			from x := 1
+			until x > fields.width
+			loop
+				from y := 1
+				until y > fields.height
+				loop
+					set_foreground_color (fields.item (x, y).color)
+					fill_rectangle ((x - 1) * 16, (y - 1) * 16, 16, 16)
+
+					y := y + 1
+				end
+
+				x:= x + 1
+			end
 		end
 
 end
