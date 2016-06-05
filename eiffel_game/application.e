@@ -34,7 +34,7 @@ feature {NONE} -- Initialization
 			-- violation of the invariant of class EV_APPLICATION.
 		do
 				-- create and initialize the first window.
-			create first_window
+			create first_window.make
 
 				-- Show the first window.
 			first_window.show

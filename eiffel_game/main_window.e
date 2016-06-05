@@ -9,38 +9,26 @@ class
 
 inherit
 	EV_TITLED_WINDOW
-		redefine
-			create_interface_objects,
-			initialize
-		end
 
 create
-	default_create
+	make
 
 feature {NONE} -- Initialization
 
-	create_interface_objects
-			-- <Precursor>
+	make
+			-- Initializes the main window
 		do
 			create main_container
-			create game_stage
-			create standard_status_bar
-			create standard_status_label
+			maze := (create {MAZE_FACTORY}).create_maze
+			create status_bar
+			create status_label
 
-		end
-
-	initialize
-			-- Build the interface for this window.
-		do
-			Precursor {EV_TITLED_WINDOW}
-
-			build_main_container
-			extend (main_container)
+			make_with_title ("Maze game")
+			set_size (400, 400)
 
 			close_request_actions.extend (agent request_close_window)
 
-			set_title ("Maze game")
-			set_size (400, 400)
+			initialize_main_container
 		end
 
 feature {NONE} -- Main container
@@ -48,47 +36,41 @@ feature {NONE} -- Main container
 	main_container: EV_VERTICAL_BOX
 			-- Main container (contains all widgets displayed in this window).
 
-	build_main_container
-			-- Popultes `main_container'.
+	maze: MAZE
+			-- The maze
+
+	status_bar: EV_STATUS_BAR
+			-- Status bar for this window
+
+	status_label: EV_LABEL
+			-- Label situated in the status bar.
+
+	initialize_main_container
+			-- Initializes main container and UI widgets
 		do
-			create main_container
+			extend (main_container)
 
-			build_game_stage
-			main_container.extend (game_stage)
-
-			build_standard_status_bar
-			main_container.extend (standard_status_bar)
-			main_container.disable_item_expand (standard_status_bar)
+			initialize_maze
+			initialize_status_bar
 		end
 
-feature {NONE} -- Game Stage
-
-	game_stage: EV_PIXMAP
-			-- Stage for the maze game graphical representation.
-
-	build_game_stage
-			-- Populates `game_stage'.
+	initialize_maze
+			-- Initializes the maze
 		do
-			game_stage.set_size(200, 200)
-			game_stage.draw_text_top_left (10, 10, "Game running")
+			main_container.extend (maze)
+			maze.repaint
 		end
 
-feature {NONE} -- StatusBar Implementation
-
-	standard_status_bar: EV_STATUS_BAR
-			-- Standard status bar for this window
-
-	standard_status_label: EV_LABEL
-			-- Label situated in the standard status bar.
-
-	build_standard_status_bar
-			-- Populates the standard toolbar.
+	initialize_status_bar
+			-- Initializes the standard toolbar.
 		do
-			standard_status_bar.set_border_width (2)
+			status_bar.set_border_width (2)
+			main_container.extend (status_bar)
+			main_container.disable_item_expand (status_bar)
 
-			standard_status_label.set_text ("Game running")
-			standard_status_label.align_text_left
-			standard_status_bar.extend (standard_status_label)
+			status_label.set_text ("Game running")
+			status_label.align_text_left
+			status_bar.extend (status_label)
 		end
 
 feature {NONE} -- Implementation, Close event
