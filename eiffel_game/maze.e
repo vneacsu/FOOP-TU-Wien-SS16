@@ -28,15 +28,19 @@ feature
 			update_listeners.extend (listener)
 		end
 
-	notify_updated(listener: PROCEDURE [MAZE])
+	notify_update_listeners
 		do
-			listener.call (Current)
+			update_listeners.do_all (agent (listener: PROCEDURE [MAZE])
+				do
+					listener.call (Current)
+				end
+			)
 		end
 
 	step
 		do
 			io.put_string ("Maze step%N")
-			update_listeners.do_all (agent notify_updated)
+			notify_update_listeners
 		end
 
 	is_game_over: BOOLEAN

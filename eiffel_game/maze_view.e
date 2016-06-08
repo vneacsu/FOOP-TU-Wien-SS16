@@ -51,29 +51,46 @@ feature
 
 	on_maze_update(maze: MAZE)
 		local
-			x: INTEGER_32
-			y: INTEGER_32
+			new_draw_area_content: EV_PIXMAP
 		do
 			io.put_string ("Maze updated%N")
 
-			draw_area.hide
-			draw_area.clear
-			draw_area.set_size (maze.get_fields.width * 16, maze.get_fields.height * 16)
+			new_draw_area_content := create_pixmap_for(maze)
+
+			draw_area.set_size (new_draw_area_content.width, new_draw_area_content.height)
+			draw_area.draw_pixmap (0, 0, new_draw_area_content)
+			draw_area.flush
+		end
+
+	create_pixmap_for (maze: MAZE): EV_PIXMAP
+		local
+			pixmap: EV_PIXMAP
+		do
+			create pixmap.make_with_size (maze.fields.width * 16, maze.fields.height * 16)
+
+			paint_fields (maze, pixmap)
+
+			Result := pixmap
+		end
+
+	paint_fields(maze: MAZE; pixmap: EV_PIXMAP)
+		local
+			x: INTEGER
+			y: INTEGER
+		do
 			from x := 1
 			until x > maze.fields.width
 			loop
 				from y := 1
 				until y > maze.fields.height
 				loop
-					draw_area.set_foreground_color (maze.fields.item (x, y).color)
-					draw_area.fill_rectangle ((x - 1) * 16, (y - 1) * 16, 16, 16)
+					pixmap.set_foreground_color (maze.fields.item (x, y).color)
+					pixmap.fill_rectangle ((x - 1) * 16, (y - 1) * 16, 16, 16)
 
 					y := y + 1
 				end
 
 				x:= x + 1
 			end
-
-			draw_area.show
 		end
 end
