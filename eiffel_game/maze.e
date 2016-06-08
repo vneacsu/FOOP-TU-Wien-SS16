@@ -7,49 +7,45 @@ note
 class
 	MAZE
 
-inherit
-	EV_PIXMAP
-
 create
 	make_with_fields
 
-feature {NONE} -- Initialization
+feature
 
-	make_with_fields(the_fields: ARRAY2[FIELD])
-			-- Initialization of the maze.
+	fields: ARRAY2 [FIELD]
+	update_listeners: ARRAYED_LIST [PROCEDURE [MAZE]]
+	game_over: BOOLEAN
+
+	make_with_fields(maze_fields: ARRAY2 [FIELD])
 		do
-			fields := the_fields
-
-			default_create
-
-			set_size (fields.width * 16, fields.height * 16)
+			fields := maze_fields
+			create update_listeners.make (1)
+			game_over := false
 		end
 
-feature -- Game graphics
-
-	fields: ARRAY2[FIELD]
-
-	repaint
-			-- Repaints the maze game
-		local
-			x: INTEGER_32
-			y: INTEGER_32
+	add_on_update_listener(listener: PROCEDURE [MAZE])
 		do
-			clear
-			from x := 1
-			until x > fields.width
-			loop
-				from y := 1
-				until y > fields.height
-				loop
-					set_foreground_color (fields.item (x, y).color)
-					fill_rectangle ((x - 1) * 16, (y - 1) * 16, 16, 16)
-
-					y := y + 1
-				end
-
-				x:= x + 1
-			end
+			update_listeners.extend (listener)
 		end
 
+	notify_updated(listener: PROCEDURE [MAZE])
+		do
+			listener.call (Current)
+		end
+
+	step
+		do
+			io.put_string ("Maze step%N")
+			update_listeners.do_all (agent notify_updated)
+		end
+
+	is_game_over: BOOLEAN
+		do
+			Result := game_over
+		end
+
+	get_fields: ARRAY2 [FIELD]
+		do
+			Result := fields
+		end
 end

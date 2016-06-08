@@ -11,79 +11,17 @@ inherit
 	EV_TITLED_WINDOW
 
 create
-	make
+	make_with_maze_view
 
-feature {NONE} -- Initialization
+feature
 
-	make
-			-- Initializes the main window
+	make_with_maze_view(maze_view: MAZE_VIEW)
 		do
-			create main_container
-			maze := (create {MAZE_FACTORY}).create_maze
-			create status_bar
-			create status_label
-
 			make_with_title ("Maze game")
 			set_size (400, 400)
+			extend (maze_view)
 
-			close_request_actions.extend (agent request_close_window)
-
-			initialize_main_container
+			close_request_actions.extend (agent destroy_and_exit_if_last)
 		end
 
-feature {NONE} -- Main container
-
-	main_container: EV_VERTICAL_BOX
-			-- Main container (contains all widgets displayed in this window).
-
-	maze: MAZE
-			-- The maze
-
-	status_bar: EV_STATUS_BAR
-			-- Status bar for this window
-
-	status_label: EV_LABEL
-			-- Label situated in the status bar.
-
-	initialize_main_container
-			-- Initializes main container and UI widgets
-		do
-			extend (main_container)
-
-			initialize_maze
-			initialize_status_bar
-		end
-
-	initialize_maze
-			-- Initializes the maze
-		do
-			main_container.extend (maze)
-			maze.repaint
-		end
-
-	initialize_status_bar
-			-- Initializes the standard toolbar.
-		do
-			status_bar.set_border_width (2)
-			main_container.extend (status_bar)
-			main_container.disable_item_expand (status_bar)
-
-			status_label.set_text ("Game running")
-			status_label.align_text_left
-			status_bar.extend (status_label)
-		end
-
-feature {NONE} -- Implementation, Close event
-
-	request_close_window
-			-- Process user request to close the window.
-		do
-			destroy
-
-			if attached (create {EV_ENVIRONMENT}).application as a then
-				a.destroy
-			end
-		ensure
-			is_destroyed: is_destroyed
-		end
 end

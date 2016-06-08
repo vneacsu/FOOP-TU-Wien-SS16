@@ -12,37 +12,35 @@ create
 
 feature {NONE} -- Initialization
 
+	app: EV_APPLICATION
+	main_window: MAIN_WINDOW
+	maze: MAZE
+	maze_view: MAZE_VIEW
+	maze_controller: MAZE_CONTROLLER
+
 	make_and_launch
-		local
-			l_app: EV_APPLICATION
 		do
-			create l_app
+			create app
 			prepare
-				-- The next instruction launches GUI message processing.
-				-- It should be the last instruction of a creation procedure
-				-- that initializes GUI objects. Any other processing should
-				-- be done either by agents associated with GUI elements
-				-- or in a separate processor.
-			l_app.launch
-				-- No code should appear here,
-				-- otherwise GUI message processing will be stuck in SCOOP mode.
+			app.launch
 		end
 
 	prepare
-			-- Prepare the first window to be displayed.
-			-- Perform one call to first window to avoid
-			-- violation of the invariant of class EV_APPLICATION.
+		local
+
 		do
-				-- create and initialize the first window.
-			create first_window.make
+			maze := (create {MAZE_FACTORY}).create_maze
 
-				-- Show the first window.
-			first_window.show
+			create maze_view.make_for_maze (maze)
+			create main_window.make_with_maze_view (maze_view)
+			main_window.show
+
+			create maze_controller.make_for_maze (maze)
+			app.post_launch_actions.extend (agent
+				do
+					io.put_string ("Launch maze controller%N")
+					maze_controller.launch
+				end
+			)
 		end
-
-feature {NONE} -- Implementation
-
-	first_window: MAIN_WINDOW
-			-- Main window.
-
 end
