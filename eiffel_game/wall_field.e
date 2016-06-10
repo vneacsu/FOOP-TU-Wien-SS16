@@ -10,6 +10,10 @@ class
 inherit
 	FIELD
 
+redefine
+	can_walk_in
+end
+
 feature
 
 	color: EV_COLOR
@@ -17,4 +21,8 @@ feature
 			Result := create {EV_COLOR}.make_with_8_bit_rgb (0, 0, 0)
 		end
 
+	can_walk_in: BOOLEAN
+		do
+			Result := false
+		end
 end

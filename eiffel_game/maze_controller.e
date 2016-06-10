@@ -26,11 +26,24 @@ feature
 
 	execute
 		do
-			io.put_string ("Maze controller launched%N")
+			register_key_listener
+
 			from until maze.game_over loop
 				maze.step
 				sleep_one_second
 			end
+		end
+
+	register_key_listener
+		do
+			if attached (create {EV_ENVIRONMENT}).application as app then
+				app.key_press_actions.extend (agent on_key_pressed)
+			end
+		end
+
+	on_key_pressed (widget: EV_WIDGET; key: EV_KEY)
+		do
+			io.put_string (key.text)
 		end
 
 	sleep_one_second

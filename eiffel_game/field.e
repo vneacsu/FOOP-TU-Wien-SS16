@@ -14,4 +14,13 @@ feature -- Maze graphics
 		deferred
 		end
 
+	is_target: BOOLEAN
+		do
+			Result := false
+		end
+
+	can_walk_in: BOOLEAN
+		do
+			Result := true
+		end
 end

@@ -53,13 +53,15 @@ feature
 		local
 			new_draw_area_content: EV_PIXMAP
 		do
-			io.put_string ("Maze updated%N")
-
 			new_draw_area_content := create_pixmap_for(maze)
 
 			draw_area.set_size (new_draw_area_content.width, new_draw_area_content.height)
 			draw_area.draw_pixmap (0, 0, new_draw_area_content)
 			draw_area.flush
+
+			if maze.game_over then
+				status_label.set_text ("Game over")
+			end
 		end
 
 	create_pixmap_for (maze: MAZE): EV_PIXMAP
@@ -69,6 +71,7 @@ feature
 			create pixmap.make_with_size (maze.fields.width * 16, maze.fields.height * 16)
 
 			paint_fields (maze, pixmap)
+			paint_mice (maze, pixmap)
 
 			Result := pixmap
 		end
@@ -91,6 +94,23 @@ feature
 				end
 
 				x:= x + 1
+			end
+		end
+
+	paint_mice (maze: MAZE; pixmap: EV_PIXMAP)
+		local
+			i: INTEGER
+			mouse: MOUSE
+		do
+			from i := 1
+			until i > maze.get_mice.count
+			loop
+				mouse := maze.get_mice.at (i)
+
+				pixmap.set_foreground_color (mouse.color)
+				pixmap.fill_rectangle ((mouse.get_maze_position.row - 1) * 16, (mouse.get_maze_position.col - 1) * 16, 16, 16)
+
+				i := i + 1
 			end
 		end
 end
