@@ -13,6 +13,7 @@ inherit
 feature
 
 	color: EV_COLOR
+			-- the color of the free field
 		do
 			Result := create {EV_COLOR}.make_with_8_bit_rgb (255, 255, 255)
 		end
