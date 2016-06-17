@@ -26,10 +26,12 @@ feature {NONE}
 			move_strategies.extend (agent (position: POSITION): POSITION do Result := create {POSITION}.make_at_row_and_col (position.row, position.col + 1) end)
 			move_strategies.extend (agent (position: POSITION): POSITION do Result := create {POSITION}.make_at_row_and_col (position.row + 1, position.col) end)
 			move_strategies.extend (agent (position: POSITION): POSITION do Result := create {POSITION}.make_at_row_and_col (position.row, position.col - 1) end)
+		ensure
+			move_strategies.count = 4
 		end
 
 feature
-	
+
 	get_random_move_strategy: FUNCTION [POSITION, POSITION]
 			-- Returns a random move strategy
 		do

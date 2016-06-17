@@ -24,6 +24,12 @@ feature {NONE}
 
 feature
 
+	same_as (pos: POSITION): BOOLEAN
+			-- Checks for position equality
+		do
+			Result := my_row = pos.row and my_col = pos.col
+		end
+
 	row: INTEGER
 			-- Returns the row position
 		do

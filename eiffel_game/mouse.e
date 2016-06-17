@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {MOUSE}."
+	description: "Mouse model"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -10,7 +10,7 @@ class
 create
 	make
 
-feature{NONE}
+feature {NONE}
 
 	mouse_id: INTEGER
 	my_color: EV_COLOR
@@ -55,6 +55,9 @@ feature
 				change_direction_randomly
 				step
 			end
+		ensure
+			not (old maze_position).same_as (maze_position)
+			get_maze.is_valid_position (maze_position)
 		end
 
 	reacts_on_key(key: STRING): BOOLEAN
@@ -75,6 +78,12 @@ feature
 			mouse_id := id
 		end
 
+	get_maze: MAZE
+			-- Get the maze of the mouse
+		do
+			Result := maze
+		end
+
 	set_maze (m: MAZE)
 			-- set the maze for the mouse
 		do
@@ -83,6 +92,9 @@ feature
 
 	set_maze_position (position: POSITION)
 			-- set the posititon in maze of the mouse
+		require
+			get_maze /= Void
+			get_maze.is_valid_position (position)
 		do
 			maze_position := position
 		end
