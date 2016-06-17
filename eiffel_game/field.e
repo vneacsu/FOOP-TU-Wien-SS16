@@ -15,11 +15,13 @@ feature -- Maze graphics
 		end
 
 	is_target: BOOLEAN
+			-- returns true when this field is the target of the game
 		do
 			Result := false
 		end
 
 	can_walk_in: BOOLEAN
+			-- return true when one can walk inside the field
 		do
 			Result := true
 		end
