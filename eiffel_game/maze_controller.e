@@ -15,21 +15,21 @@ create
 
 feature
 
-	maze: MAZE
+	maze_proxy: MAZE
 
 	make_for_maze(m: MAZE)
 		do
 			make
 
-			maze := m
+			maze_proxy := m
 		end
 
 	execute
 		do
 			register_key_listener
 
-			from until maze.game_over loop
-				maze.step
+			from until maze_proxy.game_over loop
+				maze_proxy.step
 				sleep_one_second
 			end
 		end
@@ -42,8 +42,20 @@ feature
 		end
 
 	on_key_pressed (widget: EV_WIDGET; key: EV_KEY)
+		local
+			i: INTEGER
+			mouse: MOUSE
 		do
-			io.put_string (key.text)
+			from i := 1
+			until i > maze_proxy.mice.count
+			loop
+				mouse := maze_proxy.mice[i]
+				if mouse.reacts_on_key (key.text) then
+					mouse.change_direction_randomly
+				end
+
+				i := i + 1
+			end
 		end
 
 	sleep_one_second

@@ -14,7 +14,7 @@ feature
 
 	fields: ARRAY2 [FIELD]
 	mice: ARRAYED_LIST [MOUSE]
-	update_listeners: ARRAYED_LIST [PROCEDURE [MAZE]]
+	update_listeners: ARRAYED_LIST [PROCEDURE]
 	game_over: BOOLEAN
 
 	make
@@ -53,14 +53,14 @@ feature
 			end
 		end
 
-	add_on_update_listener(listener: PROCEDURE [MAZE])
+	add_on_update_listener(listener: PROCEDURE)
 		do
 			update_listeners.extend (listener)
 		end
 
 	notify_update_listeners
 		do
-			update_listeners.do_all (agent (listener: PROCEDURE [MAZE])
+			update_listeners.do_all (agent (listener: PROCEDURE)
 				do
 					listener.call (Current)
 				end

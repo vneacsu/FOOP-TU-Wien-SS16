@@ -16,18 +16,20 @@ feature
 	color: EV_COLOR
 	maze: MAZE
 	maze_position: POSITION
+	mouse_key: STRING
 
 	move_strategy_generator: RANDOM_MOVE_STRATEGY_GENERATOR
 
 	current_move_strategy: FUNCTION [POSITION, POSITION]
 
-	make(c: EV_COLOR; random_move_strategy_generator: RANDOM_MOVE_STRATEGY_GENERATOR)
+	make(c: EV_COLOR; key: STRING; random_move_strategy_generator: RANDOM_MOVE_STRATEGY_GENERATOR)
 			-- Initialization for `Current'.
 		do
 			create maze.make
 			create maze_position.make_at_row_and_col (1, 1)
 			color := c
 			move_strategy_generator := random_move_strategy_generator
+			mouse_key := key
 
 			change_direction_randomly
 		end
@@ -49,6 +51,11 @@ feature
 				change_direction_randomly
 				step
 			end
+		end
+
+	reacts_on_key(key: STRING): BOOLEAN
+		do
+			Result := mouse_key.same_string (key)
 		end
 
 	get_color: EV_COLOR

@@ -38,7 +38,6 @@ feature {NONE} -- Initialization
 			create maze_controller.make_for_maze (maze)
 			app.post_launch_actions.extend (agent
 				do
-					io.put_string ("Launch maze controller%N")
 					maze_controller.launch
 				end
 			)

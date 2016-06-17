@@ -87,9 +87,9 @@ feature {NONE}
 		do
 			create move_strategy_generator.make
 
-			maze.add_mouse (create {MOUSE}.make (create {EV_COLOR}.make_with_8_bit_rgb (0, 0, 255), move_strategy_generator))
-			maze.add_mouse (create {MOUSE}.make (create {EV_COLOR}.make_with_8_bit_rgb (255, 0, 0), move_strategy_generator))
-			maze.add_mouse (create {MOUSE}.make (create {EV_COLOR}.make_with_8_bit_rgb (0, 255, 0), move_strategy_generator))
-			maze.add_mouse (create {MOUSE}.make (create {EV_COLOR}.make_with_8_bit_rgb (255,140,0), move_strategy_generator))
+			maze.add_mouse (create {MOUSE}.make (create {EV_COLOR}.make_with_8_bit_rgb (0, 0, 255), "q", move_strategy_generator))
+			maze.add_mouse (create {MOUSE}.make (create {EV_COLOR}.make_with_8_bit_rgb (255, 0, 0), "p", move_strategy_generator))
+			maze.add_mouse (create {MOUSE}.make (create {EV_COLOR}.make_with_8_bit_rgb (0, 255, 0), "y", move_strategy_generator))
+			maze.add_mouse (create {MOUSE}.make (create {EV_COLOR}.make_with_8_bit_rgb (255,140,0), "m", move_strategy_generator))
 		end
 end
