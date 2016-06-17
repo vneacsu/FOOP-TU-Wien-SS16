@@ -1,5 +1,5 @@
 note
-	description: "Summary description for {MAZE_VIEW}."
+	description: "Maze view component"
 	author: ""
 	date: "$Date$"
 	revision: "$Revision$"
@@ -13,7 +13,7 @@ inherit
 create
 	make_for_maze
 
-feature
+feature {NONE} -- Initialization
 
 	draw_area: EV_PIXMAP
 	status_bar: EV_STATUS_BAR
@@ -21,6 +21,7 @@ feature
 	maze: MAZE
 
 	make_for_maze(maze_model: MAZE)
+			-- Initializes the view with the given maze model
 		do
 			maze := maze_model
 			create draw_area
@@ -35,12 +36,14 @@ feature
 		end
 
 	initialize_draw_area
+			-- Initializes the draw area
 		do
 			extend (draw_area)
 			repaint_maze
 		end
 
 	initialize_status_bar
+			-- Initializes the status bar
 		do
 			status_bar.set_border_width (2)
 			extend (status_bar)
@@ -52,6 +55,7 @@ feature
 		end
 
 	on_maze_update
+			-- Listener for maze model changes
 		do
 			if attached (create {EV_ENVIRONMENT}).application as app then
 				app.do_once_on_idle (agent repaint_maze)
@@ -59,6 +63,7 @@ feature
 		end
 
 	repaint_maze
+			-- Repaints the maze based on the current maze model state
 		local
 			new_draw_area_content: EV_PIXMAP
 		do
@@ -74,6 +79,7 @@ feature
 		end
 
 	create_new_pixmap: EV_PIXMAP
+			-- Creates a new pixmap with the view on the current maze model state
 		local
 			pixmap: EV_PIXMAP
 		do
@@ -86,6 +92,7 @@ feature
 		end
 
 	paint_fields(pixmap: EV_PIXMAP)
+			-- Paints the fields of the maze on the given pixmap
 		local
 			x: INTEGER
 			y: INTEGER
@@ -107,6 +114,7 @@ feature
 		end
 
 	paint_mice (pixmap: EV_PIXMAP)
+			-- Paints the mice of the maze on the given pixmap
 		local
 			i: INTEGER
 			mouse: MOUSE

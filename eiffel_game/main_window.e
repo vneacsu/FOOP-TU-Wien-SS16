@@ -13,9 +13,10 @@ inherit
 create
 	make_with_maze_view
 
-feature
+feature {NONE} -- Initialization
 
 	make_with_maze_view(maze_view: MAZE_VIEW)
+			-- Initializes the main window
 		do
 			make_with_title ("Maze game")
 			set_size (400, 400)

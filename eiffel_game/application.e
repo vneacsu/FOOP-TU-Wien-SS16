@@ -19,6 +19,7 @@ feature {NONE} -- Initialization
 	maze_controller: MAZE_CONTROLLER
 
 	make_and_launch
+			-- Launches application
 		do
 			create app
 			prepare
@@ -26,8 +27,7 @@ feature {NONE} -- Initialization
 		end
 
 	prepare
-		local
-
+			-- Glues all application components together and shows main window
 		do
 			maze := (create {MAZE_FACTORY}).create_maze
 
