@@ -115,7 +115,7 @@ public class GamePlayerActor extends UntypedActor implements GameEventVisitor {
                 .filter(it -> !it.equals(getSelf()))
                 .forEach(it -> getContext().watch(it));
 
-        gameStateListener.onGameReady(event.getPlayers());
+        gameStateListener.onGameReady(event.getMaze(), event.getPlayers());
     }
 
     @Override

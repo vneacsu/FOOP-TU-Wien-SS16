@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
-            prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0"
+            prefWidth="960.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="at.foop16.player.ui.MainController">
     <center>
         <GridPane alignment="CENTER">
@@ -18,12 +19,21 @@
                 <Button text="4 players" onAction="#newGameSelected"/>
             </FlowPane>
 
-            <GridPane fx:id="playGamePanel" visible="false" hgap="16" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
-                <Button text="Press when had enough of playing" onAction="#endGame" GridPane.hgrow="ALWAYS"
-                        GridPane.halignment="CENTER"/>
+            <GridPane fx:id="playGamePanel" visible="false" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
 
-                <ListView GridPane.columnIndex="1" GridPane.halignment="RIGHT" fx:id="activePlayersList"/>
+                <GridPane fx:id="mazePanel" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" GridPane.halignment="CENTER">
+                    <padding><Insets top="16" right="16" bottom="16" left="16"/></padding>
+                </GridPane>
+
+                <GridPane GridPane.vgrow="ALWAYS" GridPane.columnIndex="1" GridPane.halignment="RIGHT">
+                    <ListView fx:id="activePlayersList" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS"/>
+                    <Button text="Press when had enough of playing" GridPane.rowIndex="1" onAction="#endGame"
+                            GridPane.hgrow="ALWAYS"/>
+                </GridPane>
+
             </GridPane>
+
+
         </GridPane>
     </center>
 </BorderPane>

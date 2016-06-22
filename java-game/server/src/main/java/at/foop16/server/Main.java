@@ -8,7 +8,7 @@ public class Main {
 
     public static void main(String[] args) {
         ActorSystem system = ActorSystem.create("game", ConfigFactory.load("akka.conf"));
-        system.actorOf(Props.create(GameServerActor.class), "game-server");
+        system.actorOf(Props.create(GameServerActor.class, MazeCreator.INSTANCE), "game-server");
     }
 
 }

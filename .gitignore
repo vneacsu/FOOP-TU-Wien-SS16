@@ -3,3 +3,5 @@
 EIFGENs
 *.rc
 build/
+
+classes/

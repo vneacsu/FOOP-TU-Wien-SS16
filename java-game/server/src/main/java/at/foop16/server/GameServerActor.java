@@ -9,6 +9,8 @@ import at.foop16.events.AwaitNewGameEvent;
 import at.foop16.events.GameEvent;
 import at.foop16.events.GameEventVisitor;
 import at.foop16.events.GameReadyEvent;
+import at.foop16.model.Maze;
+import at.foop16.model.fields.Field;
 
 import java.util.*;
 
@@ -17,6 +19,12 @@ public class GameServerActor extends UntypedActor implements GameEventVisitor {
     private LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
     private Map<Integer, List<ActorRef>> waitingPlayersMap = new HashMap<>();
+
+    private final MazeCreator mazeCreator;
+
+    public GameServerActor(MazeCreator mazeCreator) {
+        this.mazeCreator = mazeCreator;
+    }
 
     @Override
     public void onReceive(Object msg) {
@@ -68,8 +76,9 @@ public class GameServerActor extends UntypedActor implements GameEventVisitor {
         log.info("Notifying game ready for {} players", numPlayers);
 
         List<ActorRef> players = waitingPlayersMap.remove(numPlayers);
+        Maze maze = mazeCreator.createMaze();
 
-        GameReadyEvent event = new GameReadyEvent(players);
+        GameReadyEvent event = new GameReadyEvent(players, maze);
 
         players.forEach(player -> {
             getContext().unwatch(player);

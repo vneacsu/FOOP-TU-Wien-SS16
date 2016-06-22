@@ -5,6 +5,8 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import at.foop16.events.AwaitNewGameEvent;
 import at.foop16.events.LeaveActiveGameEvent;
+import at.foop16.model.Maze;
+import at.foop16.model.fields.Field;
 import at.foop16.player.service.GamePlayerActor;
 import at.foop16.player.service.GameStateListener;
 import javafx.application.Platform;
@@ -46,6 +48,8 @@ public class MainController implements Initializable, GameStateListener {
     private FlowPane newGamePanel;
     @FXML
     private GridPane playGamePanel;
+    @FXML
+    private GridPane mazePanel;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -90,14 +94,27 @@ public class MainController implements Initializable, GameStateListener {
     }
 
     @Override
-    public void onGameReady(List<ActorRef> players) {
+    public void onGameReady(Maze maze, List<ActorRef> players) {
         Platform.runLater(() -> {
             activePlayers.clear();
             activePlayers.addAll(players);
 
+            drawMaze(maze);
+
             loadingLabel.setVisible(false);
             playGamePanel.setVisible(true);
         });
+    }
+
+    private void drawMaze(Maze maze) {
+        for (int i = 0; i < maze.getRowCnt(); i++) {
+            for (int j = 0; j < maze.getColCnt(); j++) {
+                Field field = maze.getField(i, j);
+                String color = field.getColor();
+
+                mazePanel.getChildren().add(FieldCell.of(i, j, color));
+            }
+        }
     }
 
     @Override
