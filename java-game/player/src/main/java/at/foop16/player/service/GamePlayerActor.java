@@ -14,6 +14,7 @@ import scala.concurrent.Await;
 import scala.concurrent.Future;
 import scala.concurrent.duration.FiniteDuration;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -25,11 +26,11 @@ public class GamePlayerActor extends UntypedActor implements GameEventVisitor {
 
     private final LoggingAdapter log = Logging.getLogger(getContext().system(), this);
 
-    private Cluster cluster = Cluster.get(getContext().system());
+    private final Cluster cluster = Cluster.get(getContext().system());
+    private final GameStateListener gameStateListener;
 
-    private Optional<ActorRef> gameServer = Optional.empty();
-
-    private GameStateListener gameStateListener;
+    @Nullable
+    private ActorRef gameServer = null;
 
     public GamePlayerActor(GameStateListener gameStateListener) {
         Preconditions.checkNotNull(gameStateListener);
@@ -63,14 +64,13 @@ public class GamePlayerActor extends UntypedActor implements GameEventVisitor {
     private void handleTerminated(Terminated msg) {
         log.info("Received terminated event for {}", msg.actor());
 
-        if (gameServer.equals(Optional.of(msg.actor()))) {
+        if (gameServer != null && gameServer.equals(msg.actor())) {
             log.error("Game server is DOWN");
 
-            gameServer = Optional.empty();
+            gameServer = null;
             gameStateListener.onGameServerDown();
         } else {
             log.warning("Player {} is DOWN and left the game", msg.actor());
-
             gameStateListener.onPlayerLeftGame(msg.actor());
         }
     }
@@ -89,27 +89,26 @@ public class GamePlayerActor extends UntypedActor implements GameEventVisitor {
 
     private void tryConnectToGameServer(Future<ActorRef> actorRefFuture) {
         try {
-            gameServer = Optional.of(Await.result(actorRefFuture, GAME_SERVER_TIMEOUT));
-
+            gameServer = Await.result(actorRefFuture, GAME_SERVER_TIMEOUT);
             log.info("Player connected to game server");
 
-            context().watch(gameServer.get());
-
+            context().watch(gameServer);
             gameStateListener.onPlayerConnected();
+
         } catch (Exception e) {
             log.error("Player failed to connect to game server: {}", e);
-
             gameStateListener.onGameServerDown();
         }
     }
 
     @Override
-    public void visitAwaitNewGameEvent(AwaitNewGameEvent event) {
-        gameServer.ifPresent(it -> it.tell(event, getSelf()));
+    public void onAwaitNewGameEvent(AwaitNewGameEvent event) {
+        Preconditions.checkNotNull(gameServer, "Game server is DOWN");
+        gameServer.tell(event, getSelf());
     }
 
     @Override
-    public void visitGameReadyEvent(GameReadyEvent event) {
+    public void onGameReadyEvent(GameReadyEvent event) {
         log.info("Game ready to start");
 
         event.getPlayers().stream()
@@ -120,7 +119,7 @@ public class GamePlayerActor extends UntypedActor implements GameEventVisitor {
     }
 
     @Override
-    public void visitLeaveActiveGameEvent(LeaveActiveGameEvent event) {
+    public void onLeaveActiveGameEvent(LeaveActiveGameEvent event) {
         log.info("Player {} left the game", getSender());
 
         gameStateListener.onPlayerLeftGame(getSender());

@@ -10,10 +10,7 @@ import at.foop16.events.GameEvent;
 import at.foop16.events.GameEventVisitor;
 import at.foop16.events.GameReadyEvent;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GameServerActor extends UntypedActor implements GameEventVisitor {
 
@@ -33,15 +30,16 @@ public class GameServerActor extends UntypedActor implements GameEventVisitor {
     }
 
     private void handleTerminated(Terminated msg) {
-        log.warning("Player {} is DOWN!", msg.actor());
+        ActorRef terminatedActor = msg.actor();
+        log.warning("Player {} is DOWN!", terminatedActor);
 
         waitingPlayersMap.values().stream()
-                .filter(players -> players.contains(msg.actor()))
-                .forEach(players -> players.remove(msg.actor()));
+                .filter(players -> players.contains(terminatedActor))
+                .forEach(players -> players.remove(terminatedActor));
     }
 
     @Override
-    public void visitAwaitNewGameEvent(AwaitNewGameEvent event) {
+    public void onAwaitNewGameEvent(AwaitNewGameEvent event) {
         log.info("Player requested new game for {} players", event.getNumPlayers());
 
         getContext().watch(getSender());
@@ -73,10 +71,9 @@ public class GameServerActor extends UntypedActor implements GameEventVisitor {
 
         GameReadyEvent event = new GameReadyEvent(players);
 
-        players.forEach(it -> {
-            getContext().unwatch(it);
-
-            it.tell(event, getSelf());
+        players.forEach(player -> {
+            getContext().unwatch(player);
+            player.tell(event, getSelf());
         });
     }
 }

@@ -13,6 +13,6 @@ public class AwaitNewGameEvent implements GameEvent {
 
     @Override
     public void accept(GameEventVisitor visitor) {
-        visitor.visitAwaitNewGameEvent(this);
+        visitor.onAwaitNewGameEvent(this);
     }
 }

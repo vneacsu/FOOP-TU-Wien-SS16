@@ -19,6 +19,6 @@ public class GameReadyEvent implements GameEvent {
 
     @Override
     public void accept(GameEventVisitor visitor) {
-        visitor.visitGameReadyEvent(this);
+        visitor.onGameReadyEvent(this);
     }
 }
