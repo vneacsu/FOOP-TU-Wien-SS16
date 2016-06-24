@@ -8,7 +8,7 @@ import at.foop16.events.AwaitNewGameEvent;
 import at.foop16.events.LeaveActiveGameEvent;
 import at.foop16.events.MouseMoveEvent;
 import at.foop16.model.Maze;
-import at.foop16.model.Position;
+import at.foop16.model.Mouse;
 import at.foop16.model.fields.Field;
 import at.foop16.player.service.GamePlayerActor;
 import at.foop16.player.service.GameStateListener;
@@ -27,6 +27,7 @@ import javafx.scene.layout.GridPane;
 
 import javax.inject.Inject;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -46,7 +47,7 @@ public class MainController implements Initializable, GameStateListener {
 
     private volatile ActorRef player;
 
-    private ScheduledFuture movePlayerFuture;
+    private ScheduledFuture movePlayerTask;
 
     @FXML
     private ListView<ActorRef> activePlayersList;
@@ -60,6 +61,10 @@ public class MainController implements Initializable, GameStateListener {
     private GridPane playGamePanel;
     @FXML
     private GridPane mazePanel;
+
+    private Mouse mouse;
+
+    private List<MouseView> mouseViewList = new ArrayList<>();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -104,21 +109,21 @@ public class MainController implements Initializable, GameStateListener {
     }
 
     @Override
-    public void onGameReady(Maze maze, List<ActorRef> players) {
+    public void onGameReady(Maze maze, List<Mouse> mice, List<ActorRef> players) {
         Platform.runLater(() -> {
             activePlayers.clear();
             activePlayers.addAll(players);
 
-            drawMaze(maze);
+            drawMazeAndMice(maze, mice);
 
             loadingLabel.setVisible(false);
             playGamePanel.setVisible(true);
 
-            startGame();
+            startGame(maze, mice);
         });
     }
 
-    private void drawMaze(Maze maze) {
+    private void drawMazeAndMice(Maze maze, List<Mouse> mice) {
         for (int i = 0; i < maze.getRowCnt(); i++) {
             for (int j = 0; j < maze.getColCnt(); j++) {
                 Field field = maze.getField(i, j);
@@ -128,17 +133,28 @@ public class MainController implements Initializable, GameStateListener {
             }
         }
 
-        maze.getMice().stream().forEach(mouse -> {
-            Position position = mouse.getPosition();
-            FieldView mouseView = FieldView.ofMouse(position);
+        mice.stream().forEach(mouse -> {
+            MouseView mouseView = new MouseView(mouse);
+            mouseViewList.add(mouseView);
             mazePanel.getChildren().add(mouseView);
         });
     }
 
-    private void startGame() {
-        Runnable task = () -> activePlayers.forEach(it -> it.tell(new MouseMoveEvent(), player));
+    private void startGame(Maze maze, List<Mouse> mice) {
+        int actorId = ActorUtil.getId(player);
+        mouse = mice.stream()
+                .filter(mouseIt -> mouseIt.getId() == actorId).findFirst()
+                .orElseThrow(() -> new IllegalStateException("You are not part of the game"));
 
-        movePlayerFuture = scheduler.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
+        Runnable task = () -> {
+            mouse = mouse.moveInMaze(maze);
+            mouseViewList.stream().filter(mouseView -> mouseView.isForMouse(mouse)).findFirst()
+                    .ifPresent(mouseView -> mouseView.repaint(mouse));
+
+            activePlayers.forEach(it -> it.tell(new MouseMoveEvent(mouse), player));
+        };
+
+        movePlayerTask = scheduler.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
     }
 
     @Override
@@ -152,7 +168,9 @@ public class MainController implements Initializable, GameStateListener {
 
         Matcher matcher = Pattern.compile("([1-4]) players?").matcher(buttonText);
 
-        if (!matcher.matches()) return;
+        if (!matcher.matches()) {
+            return;
+        }
 
         int nPlayers = Integer.parseInt(matcher.group(1));
 
@@ -167,6 +185,6 @@ public class MainController implements Initializable, GameStateListener {
         newGamePanel.setVisible(true);
 
         activePlayers.forEach(it -> it.tell(new LeaveActiveGameEvent(), player));
-        movePlayerFuture.cancel(false);
+        movePlayerTask.cancel(false);
     }
 }

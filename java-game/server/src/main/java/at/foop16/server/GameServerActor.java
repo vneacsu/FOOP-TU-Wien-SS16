@@ -86,9 +86,9 @@ public class GameServerActor extends UntypedActor implements GameEventVisitor {
         List<ActorRef> players = waitingPlayersMap.remove(numPlayers);
 
         Maze maze = mazeCreator.createMaze();
-        Maze mazeWithMice = putMiceInMaze(players, maze);
+        List<Mouse> mice = putMiceInMaze(players, maze);
 
-        GameReadyEvent event = new GameReadyEvent(players, mazeWithMice);
+        GameReadyEvent event = new GameReadyEvent(players, maze, mice);
 
         players.forEach(player -> {
             getContext().unwatch(player);
@@ -96,18 +96,16 @@ public class GameServerActor extends UntypedActor implements GameEventVisitor {
         });
     }
 
-    private Maze putMiceInMaze(List<ActorRef> players, Maze maze) {
+    private List<Mouse> putMiceInMaze(List<ActorRef> players, Maze maze) {
         int lastRow = maze.getRowCnt() - 1;
         int lastCol = maze.getColCnt() - 1;
 
         Stream<Position> positions = Stream.of(Position.of(0, 0), Position.of(0, lastCol), Position.of(lastRow, 0), Position.of(lastRow, lastCol));
 
-        List<Mouse> mice = StreamUtils.zip(
+        return StreamUtils.zip(
                 positions,
                 players.stream(),
                 (position, actorRef) -> Mouse.of(ActorUtil.getId(actorRef), position)
         ).collect(Collectors.toList());
-
-        return maze.withMice(mice);
     }
 }

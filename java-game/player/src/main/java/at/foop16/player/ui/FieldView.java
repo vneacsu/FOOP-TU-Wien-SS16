@@ -9,9 +9,7 @@ import java.util.Random;
 
 public class FieldView extends StackPane {
 
-    private static final int FIELD_SIZE = 16;
-
-    private static final Random random = new Random();
+    private static final int FIELD_SIZE = 16; // TODO extract
 
     private FieldView(int row, int col, Color color) {
         Rectangle rectangle = new Rectangle(FIELD_SIZE, FIELD_SIZE);
@@ -25,12 +23,6 @@ public class FieldView extends StackPane {
 
     public static FieldView of(int row, int col, String color) {
         return new FieldView(row, col, Color.valueOf(color));
-    }
-
-    public static FieldView ofMouse(Position position) {
-        Color color = Color.color(random.nextDouble(), random.nextDouble(), random.nextDouble());
-
-        return new FieldView(position.getRow(), position.getCol(), color);
     }
 
 }

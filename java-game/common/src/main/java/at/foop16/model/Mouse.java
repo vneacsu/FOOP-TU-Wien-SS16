@@ -20,8 +20,16 @@ public class Mouse implements Serializable {
         return new Mouse(id, position);
     }
 
+    public int getId() {
+        return id;
+    }
+
     public Position getPosition() {
         return position;
+    }
+
+    public Mouse moveInMaze(Maze maze) {
+        return this; // TODO
     }
 
 }
