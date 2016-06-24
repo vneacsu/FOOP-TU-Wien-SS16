@@ -4,11 +4,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-public class FieldCell extends StackPane {
+public class FieldView extends StackPane {
 
     private static final int FIELD_SIZE = 16;
 
-    private FieldCell(int row, int col, Color color) {
+    private FieldView(int row, int col, Color color) {
         Rectangle rectangle = new Rectangle(FIELD_SIZE, FIELD_SIZE);
         rectangle.setFill(color);
 
@@ -18,10 +18,10 @@ public class FieldCell extends StackPane {
         getChildren().add(rectangle);
     }
 
-    public static FieldCell of(int row, int col, String color) {
+    public static FieldView of(int row, int col, String color) {
         Color fxColor = Color.valueOf(color);
 
-        return new FieldCell(row, col, fxColor);
+        return new FieldView(row, col, fxColor);
     }
 
 }

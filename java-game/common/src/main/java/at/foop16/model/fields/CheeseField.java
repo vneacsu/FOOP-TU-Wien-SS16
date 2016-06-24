@@ -1,7 +1,5 @@
 package at.foop16.model.fields;
 
-import javafx.scene.paint.Color;
-
 public class CheeseField extends Field {
 
     @Override

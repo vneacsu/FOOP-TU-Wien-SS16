@@ -112,7 +112,7 @@ public class MainController implements Initializable, GameStateListener {
                 Field field = maze.getField(i, j);
                 String color = field.getColor();
 
-                mazePanel.getChildren().add(FieldCell.of(i, j, color));
+                mazePanel.getChildren().add(FieldView.of(i, j, color));
             }
         }
     }
