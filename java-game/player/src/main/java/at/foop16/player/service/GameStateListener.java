@@ -15,4 +15,6 @@ public interface GameStateListener {
     void onGameReady(Maze maze, List<Mouse> mice, List<ActorRef> players);
 
     void onPlayerLeftGame(ActorRef player);
+
+    void onMouseMove(Mouse mouse);
 }

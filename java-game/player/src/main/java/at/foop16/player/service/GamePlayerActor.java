@@ -127,5 +127,7 @@ public class GamePlayerActor extends UntypedActor implements GameEventVisitor {
     @Override
     public void onMouseMovedEvent(MouseMoveEvent event) {
         log.info("Player {} moved", getSender());
+
+        gameStateListener.onMouseMove(event.getMouse());
     }
 }

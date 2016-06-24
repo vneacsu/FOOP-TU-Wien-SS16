@@ -36,4 +36,13 @@ public class Maze implements Serializable {
     public int getColCnt() {
         return colCnt;
     }
+
+    public boolean isValid(Position position) {
+        int posRow = position.getRow();
+        int posCol = position.getCol();
+
+        return 0 <= posRow && posRow < rowCnt &&
+                0 <= posCol && posCol < colCnt &&
+                getField(posRow, posCol).canWalkIn();
+    }
 }

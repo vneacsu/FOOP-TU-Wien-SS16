@@ -148,9 +148,6 @@ public class MainController implements Initializable, GameStateListener {
 
         Runnable task = () -> {
             mouse = mouse.moveInMaze(maze);
-            mouseViewList.stream().filter(mouseView -> mouseView.isForMouse(mouse)).findFirst()
-                    .ifPresent(mouseView -> mouseView.repaint(mouse));
-
             activePlayers.forEach(it -> it.tell(new MouseMoveEvent(mouse), player));
         };
 
@@ -160,6 +157,13 @@ public class MainController implements Initializable, GameStateListener {
     @Override
     public void onPlayerLeftGame(ActorRef player) {
         Platform.runLater(() -> activePlayers.remove(player));
+    }
+
+    @Override
+    public void onMouseMove(Mouse mouse) {
+        mouseViewList.stream()
+                .filter(mouseView -> mouseView.isForMouse(mouse)).findFirst()
+                .ifPresent(mouseView -> mouseView.repaint(mouse));
     }
 
     @FXML

@@ -1,8 +1,10 @@
 package at.foop16.model.fields;
 
-import javafx.scene.paint.Color;
-
 public class WallField extends Field {
+
+    public boolean canWalkIn() {
+        return false;
+    }
 
     @Override
     public String getColor() {
