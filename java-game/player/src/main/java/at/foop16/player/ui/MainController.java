@@ -22,6 +22,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 
@@ -151,6 +152,14 @@ public class MainController implements Initializable, GameStateListener {
         };
 
         movePlayerTask = scheduler.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
+
+        playGamePanel.getScene().setOnKeyPressed(keyEvent -> {
+            System.out.println("PRESSED: " + keyEvent.getCharacter());
+
+            if (keyEvent.getCode() == KeyCode.Q) {
+                mouse = mouse.changeDirectionRandomly();
+            }
+        });
     }
 
     @Override
@@ -193,5 +202,6 @@ public class MainController implements Initializable, GameStateListener {
         activePlayers.clear();
         mouseViewList.clear();
         mazePanel.getChildren().clear();
+        playGamePanel.getScene().setOnKeyPressed(null);
     }
 }

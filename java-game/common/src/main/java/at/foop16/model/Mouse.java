@@ -42,6 +42,10 @@ public class Mouse implements Serializable {
         return position;
     }
 
+    public Mouse changeDirectionRandomly() {
+        return new Mouse(id, position, randomMoveStrategy());
+    }
+
     public Mouse moveInMaze(Maze maze) {
         MoveStrategy nextMoveStrategy = moveStrategy;
         Position nextPosition = nextMoveStrategy.nextPosition(position);
