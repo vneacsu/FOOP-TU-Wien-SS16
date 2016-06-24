@@ -3,28 +3,23 @@ package at.foop16.model;
 public class Mouse {
 
     private final int id;
-    private final int row;
-    private final int col;
+    private final Position position;
 
-    private Mouse(int id, int row, int col) {
+    private Mouse(int id, Position position) {
         this.id = id;
-        this.row = row;
-        this.col = col;
+        this.position = position;
     }
 
-    public static Mouse of(int id, int row, int col) {
-        return new Mouse(id, row, col);
+    public static Mouse of(int id, Position position) {
+        return new Mouse(id, position);
     }
 
-    public Mouse withPosition(int row, int col) {
-        return new Mouse(id, row, col);
+    public Mouse withPosition(Position position) {
+        return new Mouse(id, position);
     }
 
-    public int getRow() {
-        return row;
+    public Position getPosition() {
+        return position;
     }
 
-    public int getCol() {
-        return col;
-    }
 }

@@ -43,7 +43,7 @@ public class MazeCreator {
             rowCnt++;
         }
 
-        return new Maze(fields);
+        return Maze.of(fields);
     }
 
     private Field mapCharField(char charField) {

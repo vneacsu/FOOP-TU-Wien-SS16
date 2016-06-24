@@ -34,7 +34,7 @@ public class Main extends Application {
 
     @Override
     public void stop() throws Exception {
-        injector.getInstance(ActorSystem.class).shutdown();
+        injector.getInstance(ActorSystem.class).terminate();
     }
 
     private static final class PlayerModule extends PrivateModule {

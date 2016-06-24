@@ -5,14 +5,22 @@ import akka.actor.Terminated;
 import akka.actor.UntypedActor;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
+import at.foop16.ActorUtil;
 import at.foop16.events.AwaitNewGameEvent;
 import at.foop16.events.GameEvent;
 import at.foop16.events.GameEventVisitor;
 import at.foop16.events.GameReadyEvent;
 import at.foop16.model.Maze;
-import at.foop16.model.fields.Field;
+import at.foop16.model.Mouse;
+import at.foop16.model.Position;
+import com.codepoetics.protonpack.StreamUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class GameServerActor extends UntypedActor implements GameEventVisitor {
 
@@ -76,13 +84,30 @@ public class GameServerActor extends UntypedActor implements GameEventVisitor {
         log.info("Notifying game ready for {} players", numPlayers);
 
         List<ActorRef> players = waitingPlayersMap.remove(numPlayers);
-        Maze maze = mazeCreator.createMaze();
 
-        GameReadyEvent event = new GameReadyEvent(players, maze);
+        Maze maze = mazeCreator.createMaze();
+        Maze mazeWithMice = putMiceInMaze(players, maze);
+
+        GameReadyEvent event = new GameReadyEvent(players, mazeWithMice);
 
         players.forEach(player -> {
             getContext().unwatch(player);
             player.tell(event, getSelf());
         });
+    }
+
+    private Maze putMiceInMaze(List<ActorRef> players, Maze maze) {
+        int rowCnt = maze.getRowCnt();
+        int colCnt = maze.getColCnt();
+
+        Stream<Position> positions = Stream.of(Position.of(0, 0), Position.of(0, colCnt), Position.of(rowCnt, 0), Position.of(rowCnt, colCnt));
+
+        List<Mouse> mice = StreamUtils.zip(
+                positions,
+                players.stream(),
+                (position, actorRef) -> Mouse.of(ActorUtil.getId(actorRef), position)
+        ).collect(Collectors.toList());
+
+        return maze.withMice(mice);
     }
 }

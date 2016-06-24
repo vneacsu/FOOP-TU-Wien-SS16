@@ -3,6 +3,7 @@ package at.foop16.player.ui;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.actor.Props;
+import at.foop16.ActorUtil;
 import at.foop16.events.AwaitNewGameEvent;
 import at.foop16.events.LeaveActiveGameEvent;
 import at.foop16.model.Maze;
@@ -65,7 +66,7 @@ public class MainController implements Initializable, GameStateListener {
             protected void updateItem(ActorRef item, boolean empty) {
                 super.updateItem(item, empty);
 
-                String text = item != null ? "Player #" + Math.abs(item.path().uid()) : null;
+                String text = item != null ? "Player #" + ActorUtil.getId(item) : null;
                 setText(text);
             }
         });
