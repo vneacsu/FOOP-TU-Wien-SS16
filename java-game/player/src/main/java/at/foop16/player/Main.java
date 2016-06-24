@@ -11,6 +11,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
 public class Main extends Application {
 
     private static final Injector injector = Guice.createInjector(new PlayerModule());
@@ -35,6 +38,7 @@ public class Main extends Application {
     @Override
     public void stop() throws Exception {
         injector.getInstance(ActorSystem.class).terminate();
+        injector.getInstance(ScheduledExecutorService.class).shutdownNow();
     }
 
     private static final class PlayerModule extends PrivateModule {
@@ -44,8 +48,10 @@ public class Main extends Application {
             ActorSystem actorSystem = ActorSystem.create("game", ConfigFactory.load("akka.conf"));
 
             expose(ActorSystem.class);
+            expose(ScheduledExecutorService.class);
 
             bind(ActorSystem.class).toInstance(actorSystem);
+            bind(ScheduledExecutorService.class).toInstance(Executors.newSingleThreadScheduledExecutor());
         }
     }
 }

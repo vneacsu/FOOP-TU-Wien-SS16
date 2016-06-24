@@ -15,7 +15,6 @@ import scala.concurrent.Future;
 import scala.concurrent.duration.FiniteDuration;
 
 import javax.annotation.Nullable;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static akka.cluster.ClusterEvent.initialStateAsEvents;
@@ -123,5 +122,10 @@ public class GamePlayerActor extends UntypedActor implements GameEventVisitor {
         log.info("Player {} left the game", getSender());
 
         gameStateListener.onPlayerLeftGame(getSender());
+    }
+
+    @Override
+    public void onMouseMovedEvent(MouseMoveEvent event) {
+        log.info("Player {} moved", getSender());
     }
 }

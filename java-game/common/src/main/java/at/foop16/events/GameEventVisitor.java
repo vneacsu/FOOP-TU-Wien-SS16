@@ -19,4 +19,10 @@ public interface GameEventVisitor {
                 "Operation not supported! You must either implement " +
                         "it or make sure it is never called!");
     }
+
+    default void onMouseMovedEvent(MouseMoveEvent event) {
+        throw new UnsupportedOperationException(
+                "Operation not supported! You must either implement " +
+                        "it or make sure it is never called!");
+    }
 }

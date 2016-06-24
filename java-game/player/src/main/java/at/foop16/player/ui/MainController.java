@@ -6,6 +6,7 @@ import akka.actor.Props;
 import at.foop16.ActorUtil;
 import at.foop16.events.AwaitNewGameEvent;
 import at.foop16.events.LeaveActiveGameEvent;
+import at.foop16.events.MouseMoveEvent;
 import at.foop16.model.Maze;
 import at.foop16.model.fields.Field;
 import at.foop16.player.service.GamePlayerActor;
@@ -28,6 +29,9 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,17 +40,21 @@ public class MainController implements Initializable, GameStateListener {
     @Inject
     private ActorSystem actorSystem;
 
+    @Inject
+    private ScheduledExecutorService scheduler;
+
     private volatile ActorRef player;
+
+    private ScheduledFuture movePlayerFuture;
 
     @FXML
     private ListView<ActorRef> activePlayersList;
-
     private final ObservableList<ActorRef> activePlayers = FXCollections.observableArrayList();
-
     @FXML
     private Label loadingLabel;
     @FXML
     private FlowPane newGamePanel;
+
     @FXML
     private GridPane playGamePanel;
     @FXML
@@ -104,6 +112,8 @@ public class MainController implements Initializable, GameStateListener {
 
             loadingLabel.setVisible(false);
             playGamePanel.setVisible(true);
+
+            startGame();
         });
     }
 
@@ -116,6 +126,12 @@ public class MainController implements Initializable, GameStateListener {
                 mazePanel.getChildren().add(FieldView.of(i, j, color));
             }
         }
+    }
+
+    private void startGame() {
+        Runnable task = () -> activePlayers.forEach(it -> it.tell(new MouseMoveEvent(), player));
+
+        movePlayerFuture = scheduler.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
     }
 
     @Override
@@ -144,5 +160,6 @@ public class MainController implements Initializable, GameStateListener {
         newGamePanel.setVisible(true);
 
         activePlayers.forEach(it -> it.tell(new LeaveActiveGameEvent(), player));
+        movePlayerFuture.cancel(false);
     }
 }
