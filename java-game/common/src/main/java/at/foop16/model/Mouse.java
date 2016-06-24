@@ -1,6 +1,8 @@
 package at.foop16.model;
 
-public class Mouse {
+import java.io.Serializable;
+
+public class Mouse implements Serializable {
 
     private final int id;
     private final Position position;

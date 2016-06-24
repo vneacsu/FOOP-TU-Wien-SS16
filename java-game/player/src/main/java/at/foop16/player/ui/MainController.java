@@ -8,6 +8,7 @@ import at.foop16.events.AwaitNewGameEvent;
 import at.foop16.events.LeaveActiveGameEvent;
 import at.foop16.events.MouseMoveEvent;
 import at.foop16.model.Maze;
+import at.foop16.model.Position;
 import at.foop16.model.fields.Field;
 import at.foop16.player.service.GamePlayerActor;
 import at.foop16.player.service.GameStateListener;
@@ -126,6 +127,12 @@ public class MainController implements Initializable, GameStateListener {
                 mazePanel.getChildren().add(FieldView.of(i, j, color));
             }
         }
+
+        maze.getMice().stream().forEach(mouse -> {
+            Position position = mouse.getPosition();
+            FieldView mouseView = FieldView.ofMouse(position);
+            mazePanel.getChildren().add(mouseView);
+        });
     }
 
     private void startGame() {

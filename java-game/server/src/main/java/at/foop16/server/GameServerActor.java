@@ -97,10 +97,10 @@ public class GameServerActor extends UntypedActor implements GameEventVisitor {
     }
 
     private Maze putMiceInMaze(List<ActorRef> players, Maze maze) {
-        int rowCnt = maze.getRowCnt();
-        int colCnt = maze.getColCnt();
+        int lastRow = maze.getRowCnt() - 1;
+        int lastCol = maze.getColCnt() - 1;
 
-        Stream<Position> positions = Stream.of(Position.of(0, 0), Position.of(0, colCnt), Position.of(rowCnt, 0), Position.of(rowCnt, colCnt));
+        Stream<Position> positions = Stream.of(Position.of(0, 0), Position.of(0, lastCol), Position.of(lastRow, 0), Position.of(lastRow, lastCol));
 
         List<Mouse> mice = StreamUtils.zip(
                 positions,
