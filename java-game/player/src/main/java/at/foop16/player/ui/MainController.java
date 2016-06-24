@@ -64,7 +64,7 @@ public class MainController implements Initializable, GameStateListener {
 
     private Mouse mouse;
 
-    private List<MouseView> mouseViewList = new ArrayList<>();
+    private final List<MouseView> mouseViewList = new ArrayList<>();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -111,7 +111,6 @@ public class MainController implements Initializable, GameStateListener {
     @Override
     public void onGameReady(Maze maze, List<Mouse> mice, List<ActorRef> players) {
         Platform.runLater(() -> {
-            activePlayers.clear();
             activePlayers.addAll(players);
 
             drawMazeAndMice(maze, mice);
@@ -190,5 +189,9 @@ public class MainController implements Initializable, GameStateListener {
 
         activePlayers.forEach(it -> it.tell(new LeaveActiveGameEvent(), player));
         movePlayerTask.cancel(false);
+
+        activePlayers.clear();
+        mouseViewList.clear();
+        mazePanel.getChildren().clear();
     }
 }
