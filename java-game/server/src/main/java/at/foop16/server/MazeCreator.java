@@ -10,7 +10,7 @@ public class MazeCreator {
 
     public static MazeCreator INSTANCE = new MazeCreator();
 
-    private static final int MAZE_SIZE = 7;
+    private static final int MAZE_SIZE = 15;
 
     private MazeCreator() {
     }
@@ -18,13 +18,21 @@ public class MazeCreator {
     public Maze createMaze() {
         final String mazePattern =
                 "" +
-                        "fffwwff" + "\n" +
-                        "fffffff" + "\n" +
-                        "fffwfff" + "\n" +
-                        "fffwfff" + "\n" +
-                        "fffcfff" + "\n" +
-                        "ffwwwff" + "\n" +
-                        "fwwwwff";
+                        "fffffwwwwwwwfff" + "\n" +
+                        "wwfwfwwwwwwwffw" + "\n" +
+                        "wwfwfffwwwwwfww" + "\n" +
+                        "wwfwwwfwwwwffww" + "\n" +
+                        "wwfwwwfffffffww" + "\n" +
+                        "wwffwwfwwffffww" + "\n" +
+                        "wwwfffffffwwfww" + "\n" +
+                        "wwwwwffcffwwfww" + "\n" +
+                        "wwwwwffffwwffww" + "\n" +
+                        "wwwwwfwwwwffwww" + "\n" +
+                        "wwwwwfwwwwfwwww" + "\n" +
+                        "fffffffffffwwww" + "\n" +
+                        "fwwwwwwwfwwwwww" + "\n" +
+                        "fwwwwwwwfffffff" + "\n" +
+                        "fwwwwwwwwwwwwff";
 
 
         Field[][] fields = new Field[MAZE_SIZE][MAZE_SIZE];
