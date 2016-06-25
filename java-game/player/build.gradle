@@ -1,0 +1,3 @@
+apply plugin: 'application'
+
+mainClassName = 'at.foop16.player.Main'

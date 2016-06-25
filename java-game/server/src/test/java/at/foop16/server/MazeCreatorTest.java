@@ -15,11 +15,11 @@ public class MazeCreatorTest {
     public void basic() {
         Maze maze = MazeCreator.INSTANCE.createMaze();
 
-        assertThat(maze.getRowCnt(), is(5));
-        assertThat(maze.getColCnt(), is(5));
+        assertThat(maze.getRowCnt(), is(15));
+        assertThat(maze.getColCnt(), is(15));
 
         assertThat(maze.getField(0, 0), instanceOf(FreeField.class));
-        assertThat(maze.getField(0, 3), instanceOf(WallField.class));
+        assertThat(maze.getField(0, 6), instanceOf(WallField.class));
     }
 
 }
