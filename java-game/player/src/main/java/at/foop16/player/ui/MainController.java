@@ -18,10 +18,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
@@ -147,15 +144,13 @@ public class MainController implements Initializable, GameStateListener {
                 .orElseThrow(() -> new IllegalStateException("You are not part of the game"));
 
         Runnable task = () -> {
-            mouse = mouse.moveInMaze(maze);
+            mouse = mouse.moveInMaze();
             activePlayers.forEach(it -> it.tell(new MouseMoveEvent(mouse), player));
         };
 
         movePlayerTask = scheduler.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
 
         playGamePanel.getScene().setOnKeyPressed(keyEvent -> {
-            System.out.println("PRESSED: " + keyEvent.getCharacter());
-
             if (keyEvent.getCode() == KeyCode.Q) {
                 mouse = mouse.changeDirectionRandomly();
             }
@@ -169,9 +164,31 @@ public class MainController implements Initializable, GameStateListener {
 
     @Override
     public void onMouseMove(Mouse mouse) {
-        mouseViewList.stream()
-                .filter(mouseView -> mouseView.isForMouse(mouse)).findFirst()
-                .ifPresent(mouseView -> mouseView.repaint(mouse));
+        Platform.runLater(() -> {
+            mouseViewList.stream()
+                    .filter(mouseView -> mouseView.isForMouse(mouse)).findFirst()
+                    .ifPresent(mouseView -> mouseView.repaint(mouse));
+
+            if (mouse.isAtTarget()) {
+                movePlayerTask.cancel(false);
+                showWinnerDialog(mouse);
+                endGame(null);
+            }
+        });
+
+    }
+
+    private void showWinnerDialog(Mouse mouse) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, getWinnerMessage(mouse));
+        alert.showAndWait();
+    }
+
+    private String getWinnerMessage(Mouse mouse) {
+        if (this.mouse.getId() == mouse.getId()) {
+            return "You won";
+        } else {
+            return "Mouse " + mouse.getId() + " won";
+        }
     }
 
     @FXML

@@ -105,7 +105,7 @@ public class GameServerActor extends UntypedActor implements GameEventVisitor {
         return StreamUtils.zip(
                 positions,
                 players.stream(),
-                (position, actorRef) -> Mouse.of(ActorUtil.getId(actorRef), position)
+                (position, actorRef) -> Mouse.of(ActorUtil.getId(actorRef), position, maze)
         ).collect(Collectors.toList());
     }
 }
